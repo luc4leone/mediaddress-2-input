@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ricerca testo libero v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* 1. Scale */
+  --font-size-12: 12px; --font-size-14: 14px; --font-size-16: 16px; --font-size-18: 18px; --font-size-24: 24px;
+  --line-height-snug: 1.3; --line-height-normal: 1.5;
+  --space-6: 6px; --space-12: 12px; --space-18: 18px; --space-24: 24px; --space-36: 36px;
+  --radius-4: 4px; --radius-8: 8px; --radius-full: 9999px;
+  --border-width-1: 1px; --border-width-2: 2px; --border-width-4: 4px;
+
+  /* 2. Palette */
+  --color-coral: #FF6B4A;
+  --color-black: #0E0E10;
+  --color-white: #FAFAFA;
+  --color-grey: #8C8C94;
+  --color-grey-dark: #6B6B73;
+  --color-line: #E3E3E6;
+  --zinc-100: #f4f4f5;
+  --pure-white: #FFFFFF;
+
+  /* 3. Semantiche */
+  --color-background: var(--color-white);
+  --color-surface: var(--pure-white);
+  --color-surface-muted: var(--zinc-100);
+  --color-text: var(--color-black);
+  --color-text-muted: var(--color-grey-dark);
+  --color-border: var(--color-line);
+  --color-accent: var(--color-coral);
+  --color-overlay: rgba(14, 14, 16, 0.6);
+  --color-secondary: var(--color-black);
+  --color-on-secondary: var(--color-white);
+  --focus-ring-color: var(--color-black);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --font-display: 'Archivo Black', sans-serif;
+  --font-body: 'Archivo', sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-14);
+  line-height: var(--line-height-normal);
+  overflow-x: hidden;
+}
+:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
+button { font: inherit; color: inherit; cursor: pointer; }
+input { font: inherit; color: inherit; }
+
+.layout { display: flex; flex-direction: column; min-height: 100vh; }
+.sidebar { padding: var(--space-24) var(--space-18); border-bottom: var(--border-width-1) solid var(--color-border); background: var(--color-surface); }
+.main { padding: var(--space-24) var(--space-18); min-width: 0; order: 2; }
+.criteria { padding: var(--space-24) var(--space-18); border-bottom: var(--border-width-1) solid var(--color-border); background: var(--color-surface); order: 1; }
+.criteria[hidden] { display: none; }
+@media (min-width: 768px) {
+  .layout { flex-direction: row; }
+  .sidebar { width: 340px; flex: none; border-bottom: 0; border-right: var(--border-width-1) solid var(--color-border); padding: var(--space-24); }
+  .main { flex: 1; padding: var(--space-24) var(--space-36); order: 1; }
+  .criteria { width: 340px; flex: none; order: 2; border-bottom: 0; border-left: var(--border-width-1) solid var(--color-border); padding: var(--space-24); position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; }
+}
+
+h1 { font-family: var(--font-display); font-weight: 400; font-size: var(--font-size-24); line-height: var(--line-height-snug); margin: 0 0 var(--space-6); }
+.muted { color: var(--color-text-muted); }
+.small { font-size: var(--font-size-12); }
+.label { font-weight: 600; margin: 0 0 var(--space-6); display: block; }
+
+/* Interruttore versione */
+
+.field { position: relative; }
+.field input {
+  width: 100%; padding: var(--space-12); border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--radius-8); background: var(--color-surface);
+}
+.field input:focus { border-color: var(--color-text); }
+.hint { margin: var(--space-6) 0 0; }
+
+/* Suggerimenti */
+.suggest {
+  position: absolute; left: 0; right: 0; top: calc(100% + var(--space-6)); z-index: 10;
+  background: var(--color-surface); border: var(--border-width-1) solid var(--color-text);
+  border-radius: var(--radius-8); padding: 0 0 var(--space-6); max-height: 70vh; overflow-y: auto;
+}
+.suggest[hidden] { display: none; }
+/* Ogni gruppo ha un'intestazione su fondo grigio e una linea che lo separa dal successivo */
+.sg + .sg { border-top: var(--border-width-1) solid var(--color-border); }
+.sg h3 { margin: 0 0 var(--space-6); padding: var(--space-6) var(--space-12); background: var(--color-surface-muted); font-size: var(--font-size-14); font-weight: 700; color: var(--color-text); }
+.sg h3 .count { font-weight: 400; color: var(--color-text-muted); }
+.opt { display: block; width: 100%; text-align: left; border: 0; background: transparent; padding: var(--space-6) var(--space-12); }
+.opt .sub { display: block; font-size: var(--font-size-12); color: var(--color-text-muted); }
+.opt.active { background: var(--color-surface-muted); }
+.opt.all { border-top: var(--border-width-1) solid var(--color-border); margin-top: var(--space-6); padding-top: var(--space-12); font-weight: 600; }
+
+/* Chip filtro entità */
+.chip { display: inline-flex; align-items: center; gap: var(--space-6); margin-top: var(--space-12); padding: var(--space-6) var(--space-12); border-radius: var(--radius-full); background: var(--color-secondary); color: var(--color-on-secondary); font-weight: 500; }
+.chip button { border: 0; background: transparent; color: inherit; padding: 0 2px; font-weight: 700; }
+.pins { display: flex; flex-wrap: wrap; gap: var(--space-6); }
+.pins .chip { margin-top: var(--space-12); }
+.pins[hidden] { display: none; }
+
+
+/* Tab risultati */
+/* Stesso stile per i tab dei risultati e per l'interruttore di versione */
+.criteria h2 { font-size: var(--font-size-18); font-weight: 700; line-height: var(--line-height-snug); margin: 0 0 var(--space-12); }
+.criteria ol { margin: 0; padding-left: var(--space-18); font-size: var(--font-size-14); }
+.criteria .note { margin: 0; font-size: var(--font-size-14); }
+.criteria li { margin-bottom: var(--space-12); }
+.criteria li b { font-weight: 600; }
+.criteria ul { margin: var(--space-6) 0 0; padding-left: var(--space-18); }
+.criteria ul li { margin-bottom: 2px; }
+.wtable { width: 100%; border-collapse: collapse; margin: var(--space-6) 0; font-size: var(--font-size-14); }
+.wtable th, .wtable td { text-align: left; padding: 2px var(--space-6) 2px 0; border-bottom: var(--border-width-1) solid var(--color-border); font-weight: 400; }
+.wtable th { color: var(--color-text-muted); }
+.wtable td.num, .wtable th.num { text-align: right; }
+.wtable .on { color: var(--color-text); font-weight: 700; }
+.modes { gap: var(--space-18); }
+.tabs, .modes { display: flex; border-bottom: var(--border-width-1) solid var(--color-border); }
+.tabs { gap: var(--space-24); margin: 0 0 var(--space-12); }
+.tabs button, .modes button { border: 0; background: transparent; padding: var(--space-12) 0; font-weight: 500; color: var(--color-text-muted); border-bottom: var(--border-width-4) solid transparent; margin-bottom: -1px; }
+.tabs button[aria-selected="true"], .modes button[aria-pressed="true"] { color: var(--color-text); font-weight: 700; border-bottom-color: var(--color-accent); }
+.count { font-weight: 400; }
+
+/* Chip per campo */
+.fields { display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: center; margin-bottom: var(--space-18); }
+.fields .lbl { margin-right: var(--space-6); }
+.fields .linkrow { flex-basis: 100%; margin-top: var(--space-6); }
+
+/* Link: nel colore del testo, sottolineato in grigio; l'accento compare solo all'hover (come base.css del sito) */
+.link { border: 0; background: transparent; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  text-decoration: underline; text-decoration-color: var(--color-grey); text-underline-offset: 0.15em; }
+.link:hover { text-decoration-color: var(--color-accent); }
+
+/* Modale: piatta, bordo nero, fondo scuro tinto sul nero del brand */
+.modal { border: var(--border-width-1) solid var(--color-text); border-radius: var(--radius-8); background: var(--color-surface); color: var(--color-text);
+  padding: 0; width: min(560px, calc(100vw - 2 * var(--space-18))); max-height: 80vh; }
+.modal[open] { display: flex; flex-direction: column; }
+.modal::backdrop { background: var(--color-overlay); }
+.modal header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-12); padding: var(--space-18) var(--space-24); border-bottom: var(--border-width-1) solid var(--color-border); }
+.modal h2 { font-size: var(--font-size-18); font-weight: 700; line-height: var(--line-height-snug); margin: 0; }
+.modal header p { margin: 2px 0 0; color: var(--color-text-muted); }
+.modal .close { border: 0; background: transparent; font-size: var(--font-size-24); line-height: 1; padding: 0 var(--space-6); font-weight: 400; }
+.modal .body { overflow-y: auto; padding: var(--space-6) var(--space-24) var(--space-18); }
+.olist { list-style: none; margin: 0; padding: 0; }
+.olist li { padding: var(--space-12) 0; border-bottom: var(--border-width-1) solid var(--color-border); margin: 0; }
+.olist li:last-child { border-bottom: 0; }
+.olist .name { font-weight: 600; }
+.olist .meta { color: var(--color-text-muted); font-size: var(--font-size-14); }
+.fchip { border: var(--border-width-1) solid var(--color-text); background: var(--color-surface); border-radius: var(--radius-full); padding: 2px var(--space-12); font-size: var(--font-size-12); font-weight: 500; }
+.fchip[aria-pressed="false"] { border-color: var(--color-border); color: var(--color-text-muted); text-decoration: line-through; }
+.fchip:disabled { opacity: 0.5; cursor: default; text-decoration: none; }
+
+/* Risultati */
+.list { list-style: none; margin: 0; padding: 0; }
+.row { padding: var(--space-12) 0; border-bottom: var(--border-width-1) solid var(--color-border); }
+.row .name { font-weight: 600; font-size: var(--font-size-16); }
+.row .meta { color: var(--color-text-muted); }
+.row .line { margin-top: 2px; overflow-wrap: anywhere; }
+.why { display: flex; flex-wrap: wrap; gap: var(--space-6); margin-top: var(--space-6); }
+.tag { font-size: var(--font-size-12); border: var(--border-width-1) solid var(--color-border); border-radius: var(--radius-4); padding: 0 var(--space-6); color: var(--color-text-muted); }
+.tag b { color: var(--color-text); font-weight: 600; }
+.score { font-size: var(--font-size-12); color: var(--color-text-muted); float: right; margin-left: var(--space-12); }
+mark { background: transparent; color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.more { padding: var(--space-12) 0; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+
+    <div id="modeUno">
+      <label class="label" for="q">Filtra per termine</label>
+      <div class="field">
+        <input id="q" type="search" autocomplete="off"
+               role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list">
+        <div id="suggest" class="suggest" role="listbox" hidden></div>
+      </div>
+      <div id="chipSlot"></div>
+      <div id="pins" class="pins" hidden></div>
+    </div>
+
+
+  </aside>
+
+  <main class="main">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="g" aria-selected="true">Giornalisti <span class="count" id="cg"></span></button>
+      <button type="button" role="tab" data-tab="t" aria-selected="false">Testate <span class="count" id="ct"></span></button>
+    </div>
+    <div id="fields" class="fields"></div>
+    <ul id="list" class="list"></ul>
+    <div id="more" class="more muted"></div>
+  </main>
+
+  <aside class="criteria" id="criteria" aria-labelledby="critTitle">
+    <h2 id="critTitle">Criterio di ordinamento</h2>
+    <ol class="small">
+      <li><b>Chi entra.</b> Un giornalista o una testata entra se il termine compare in almeno uno dei 5 campi; maiuscole e accenti non contano. Ogni entità eredita anche i campi di quella collegata: per un giornalista si guardano anche nome e note delle sue testate, per una testata anche nome, email e note dei suoi giornalisti. I chip "Trovato in" escludono un campo.</li>
+      <li><b>Punteggio di un campo = peso × qualità.</b> Il peso dipende dal tab; in grassetto quello attivo.
+        <table class="wtable" id="wtable"></table>
+        La qualità va da 1 a 2:
+        <ul>
+          <li><b>2</b> se il testo, tolti articoli e punteggiatura, è uguale al termine ("LA REPUBBLICA" = "repubblica");</li>
+          <li>altrimenti <b>1.3</b> parola intera, <b>1.2</b> inizio di parola, <b>1</b> pezzo di parola,</li>
+          <li>più fino a <b>0.5</b> in base a quanta parte del testo occupa il termine.</li>
+        </ul>
+      </li>
+      <li><b>Punteggio del risultato</b> = il campo migliore + l'1% della somma di tutti i campi trovati. Conta la corrispondenza migliore; trovarne altre dà solo un piccolo vantaggio.</li>
+      <li><b>Più termini.</b> Con Invio il termine si fissa in un chip e se ne può scrivere un altro. Un risultato deve contenerli tutti, anche in campi diversi; il suo punteggio è la somma dei punteggi dei singoli termini.</li>
+      <li><b>A parità</b> vince la testata con più giornalisti, poi l'ordine alfabetico.</li>
+    </ol>
+    <p class="note muted">Esempio: "LA REPUBBLICA" nel tab Testate prende 100 × 2 = 200 per il nome, più un poco per l'email di una giornalista che contiene "repubblica": 202, il numero a destra del risultato.</p>
+  </aside>
+</div>
+
+<dialog class="modal" id="outletsModal" aria-labelledby="omTitle">
+  <header>
+    <div>
+      <h2 id="omTitle">Testate corrispondenti</h2>
+      <p class="small" id="omSub"></p>
+    </div>
+    <button type="button" class="close" id="omClose" aria-label="Chiudi">×</button>
+  </header>
+  <div class="body"><ul class="olist" id="omList"></ul></div>
+</dialog>
+
+<script>
+const DATA = /*DATA*/;
+
+const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const esc = s => (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const O = new Map(DATA.o.map(o => [o.id, { ...o, _n: norm(o.n), _x: norm(o.note), ps: [] }]));
+const P = DATA.p.map(p => ({ ...p, _n: norm(p.n), _e: norm(p.e), _x: norm(p.note), os: p.o.map(id => O.get(id)).filter(Boolean) }));
+P.forEach(p => p.os.forEach(o => o.ps.push(p)));
+const OUT = [...O.values()];
+
+const FIELDS = [
+  { k: 'gn', label: 'Nome giornalista' },
+  { k: 'ge', label: 'Email giornalista' },
+  { k: 'gx', label: 'Note giornalista' },
+  { k: 'tn', label: 'Nome testata' },
+  { k: 'tx', label: 'Note testata' },
+];
+const LABEL = Object.fromEntries(FIELDS.map(f => [f.k, f.label]));
+
+// Peso di ogni campo: cambia col tab. Nel tab Giornalisti contano prima
+// i campi del giornalista, nel tab Testate quelli della testata.
+const W = {
+  g: { gn: 100, ge: 60, tn: 40, gx: 20, tx: 5 },
+  t: { tn: 100, tx: 30, ge: 20, gn: 15, gx: 5 },
+};
+
+// Articoli e preposizioni ignorati nel confronto: "LA REPUBBLICA" vale come "repubblica"
+const STOP = new Set(['la', 'il', 'lo', 'l', 'i', 'gli', 'le', 'un', 'una', 'di', 'd', 'del', 'della', 'dello', 'dei', 'degli', 'delle', 'e', 'a', 'da', 'in', 'the', 'of']);
+const coreCache = new Map();
+function core(s) {
+  let c = coreCache.get(s);
+  if (c === undefined) {
+    c = s.split(/[^a-z0-9]+/).filter(w => w && !STOP.has(w)).join(' ');
+    coreCache.set(s, c);
+  }
+  return c;
+}
+
+// Qualità della corrispondenza, da 1 a 2:
+// - esatta, ignorando articoli e punteggiatura: 2
+// - altrimenti parola intera 1.3 > inizio parola 1.2 > sottostringa 1,
+//   più fino a 0.5 per quanta parte del testo copre la parola cercata
+function quality(text, q) {
+  const i = text.indexOf(q);
+  if (i < 0) return 0;
+  const tc = core(text), qc = core(q) || q;
+  if (tc === qc) return 2;
+  const isB = c => c === undefined || !/[a-z0-9]/.test(c);
+  const start = isB(text[i - 1]), end = isB(text[i + q.length]);
+  const base = start && end ? 1.3 : start ? 1.2 : 1;
+  const cover = Math.min(1, qc.length / Math.max(tc.length, 1));
+  return base + 0.5 * cover;
+}
+
+// Spareggio a parità di punteggio: per le testate, quanti giornalisti ci lavorano.
+// Nel campione è un'approssimazione: per ogni testata ne ho scaricati al massimo 6.
+const importance = e => (e.ps ? e.ps.length : 0);
+const byRank = (a, b) => Math.round((b.sc || 0) * 100) - Math.round((a.sc || 0) * 100)
+  || importance(b.e) - importance(a.e)
+  || a.e.n.localeCompare(b.e.n);
+
+function best(items, key, q) {
+  let b = null;
+  for (const it of items) {
+    const s = quality(it[key], q);
+    if (s && (!b || s > b.s)) b = { s, via: it.n };
+  }
+  return b;
+}
+
+function matchPerson(p, q) {
+  const m = {};
+  let s;
+  if ((s = quality(p._n, q))) m.gn = { s };
+  if ((s = quality(p._e, q))) m.ge = { s };
+  if ((s = quality(p._x, q))) m.gx = { s };
+  const tn = best(p.os, '_n', q); if (tn) m.tn = tn;
+  const tx = best(p.os, '_x', q); if (tx) m.tx = tx;
+  return m;
+}
+function matchOutlet(o, q) {
+  const m = {};
+  let s;
+  if ((s = quality(o._n, q))) m.tn = { s };
+  if ((s = quality(o._x, q))) m.tx = { s };
+  const gn = best(o.ps, '_n', q); if (gn) m.gn = gn;
+  const ge = best(o.ps, '_e', q); if (ge) m.ge = ge;
+  const gx = best(o.ps, '_x', q); if (gx) m.gx = gx;
+  return m;
+}
+function score(m, w, on) {
+  let max = 0, sum = 0;
+  for (const k in m) if (on.has(k)) { const v = w[k] * m[k].s; max = Math.max(max, v); sum += v; }
+  return max + sum / 100;
+}
+
+// ---------- Stato ----------
+const state = {
+  mode: 'secco',
+  tab: 'g',
+  q: '',            // testo cercato in tutti i campi (proposta)
+  pins: [],         // termini fissati con Invio in "1 input", in AND
+  ent: null,        // filtro esatto da suggerimento: { type: 'g'|'t', id }
+  on: new Set(FIELDS.map(f => f.k)),
+  qa: '', qb: '',   // attuale
+};
+
+const $ = id => document.getElementById(id);
+
+// ---------- Calcolo risultati ----------
+// Termini attivi: in "1 input" quelli fissati nei chip più quello che si sta scrivendo
+function activeTerms() {
+  const live = norm(state.q.trim());
+  const t = state.mode === 'secco' ? state.pins.map(norm) : [];
+  if (live && !t.includes(live)) t.push(live);
+  return t;
+}
+function mergeMatches(ms) {
+  const m = {};
+  for (const mt of ms) for (const k in mt) if (!m[k] || mt[k].s > m[k].s) m[k] = mt[k];
+  return m;
+}
+
+function compute() {
+  if (state.mode !== 'due') {
+    if (state.ent) {
+      if (state.ent.type === 't') {
+        const o = O.get(state.ent.id);
+        return { g: o.ps.map(p => ({ e: p })), t: [{ e: o }] };
+      }
+      const p = P.find(x => x.id === state.ent.id);
+      return { g: [{ e: p }], t: p.os.map(o => ({ e: o })) };
+    }
+    const terms = activeTerms();
+    if (!terms.length) return { g: P.map(e => ({ e })), t: OUT.map(e => ({ e })) };
+    // Con più termini un risultato deve contenerli tutti (AND)
+    const run = (arr, match) => arr.map(e => ({ e, ms: terms.map(q => match(e, q)) }))
+      .filter(r => r.ms.every(mt => Object.keys(mt).length))
+      .map(r => ({ ...r, m: mergeMatches(r.ms) }));
+    return { g: run(P, matchPerson), t: run(OUT, matchOutlet), terms };
+  }
+
+  // Attuale: input A sui campi del giornalista, input B sui campi della testata, in AND
+  const qa = norm(state.qa.trim()), qb = norm(state.qb.trim());
+  let g = P.map(e => ({ e, m: {} })), t = OUT.map(e => ({ e, m: {} }));
+  if (qa) {
+    g = g.filter(r => {
+      let s;
+      if ((s = quality(r.e._n, qa))) r.m.gn = { s };
+      if ((s = quality(r.e._e, qa))) r.m.ge = { s };
+      if ((s = quality(r.e._x, qa))) r.m.gx = { s };
+      return Object.keys(r.m).length;
+    });
+    const ids = new Set(g.flatMap(r => r.e.os.map(o => o.id)));
+    t = t.filter(r => ids.has(r.e.id));
+    t.forEach(r => {
+      r.m.via = { s: 1, via: r.e.ps.find(p => quality(p._n, qa) || quality(p._e, qa) || quality(p._x, qa))?.n };
+    });
+  }
+  if (qb) {
+    const tm = new Map();
+    OUT.forEach(o => {
+      const m = {}; let s;
+      if ((s = quality(o._n, qb))) m.tn = { s };
+      if ((s = quality(o._x, qb))) m.tx = { s };
+      if (Object.keys(m).length) tm.set(o.id, m);
+    });
+    t = t.filter(r => tm.has(r.e.id));
+    t.forEach(r => Object.assign(r.m, tm.get(r.e.id)));
+    g = g.filter(r => r.e.os.some(o => tm.has(o.id)));
+    g.forEach(r => { const o = r.e.os.find(o => tm.has(o.id)); r.m.viaT = { s: 1, via: o.n }; });
+  }
+  return { g, t, qa, qb };
+}
+
+// ---------- Render ----------
+// q può essere una stringa o un elenco di termini
+const toArr = q => (Array.isArray(q) ? q : q ? [q] : []).filter(Boolean);
+const hasAny = (text, q) => toArr(q).some(t => text.includes(t));
+function hl(text, q) {
+  const qs = toArr(q);
+  if (!qs.length) return esc(text);
+  const n = norm(text);
+  let out = '', i = 0;
+  for (;;) {
+    let j = -1, len = 0;
+    for (const t of qs) { const k = n.indexOf(t, i); if (k >= 0 && (j < 0 || k < j || (k === j && t.length > len))) { j = k; len = t.length; } }
+    if (j < 0) break;
+    out += esc(text.slice(i, j)) + '<mark>' + esc(text.slice(j, j + len)) + '</mark>';
+    i = j + len;
+  }
+  return out + esc(text.slice(i));
+}
+function snippet(text, q, len = 140) {
+  if (!text) return '';
+  const n = norm(text);
+  const i = toArr(q).map(t => n.indexOf(t)).filter(k => k >= 0).sort((a, b) => a - b)[0] ?? -1;
+  if (i < 0 || text.length <= len) return text.length > len ? text.slice(0, len) + '…' : text;
+  const a = Math.max(0, i - 50);
+  return (a ? '…' : '') + text.slice(a, a + len) + (a + len < text.length ? '…' : '');
+}
+
+let shownG = [];   // giornalisti attualmente filtrati, per la modale delle testate corrispondenti
+function render() {
+  renderWeights();
+  const R = compute();
+  const tab = state.tab;
+  const q = state.mode !== 'due' ? activeTerms() : [];
+  const qa = state.mode === 'due' ? norm(state.qa.trim()) : '';
+  const qb = state.mode === 'due' ? norm(state.qb.trim()) : '';
+  const fullText = state.mode !== 'due' && !state.ent && q.length > 0;
+
+  // filtro per campi attivi e ordinamento
+  const keep = rows => fullText ? rows.filter(r => r.ms.every(mt => Object.keys(mt).some(k => state.on.has(k)))) : rows;
+  const g = keep(R.g), t = keep(R.t);
+  const rank = (rows, w) => {
+    if (fullText) rows.forEach(r => r.sc = r.ms.reduce((a, mt) => a + score(mt, W[w], state.on), 0));
+    else if (state.mode === 'due' && (qa || qb)) rows.forEach(r => r.sc = Object.values(r.m).reduce((a, x) => Math.max(a, x.s), 0));
+    return rows.sort(byRank);
+  };
+  rank(g, 'g'); rank(t, 't');
+
+  $('cg').textContent = `(${g.length})`;
+  $('ct').textContent = `(${t.length})`;
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
+
+  // chip per campo (solo ricerca a tutto campo)
+  const fieldsEl = $('fields');
+  if (fullText) {
+    const rows = tab === 'g' ? R.g : R.t;
+    fieldsEl.innerHTML = '<span class="lbl small muted">Trovato in:</span>' + FIELDS.map(f => {
+      const n = rows.filter(r => r.m[f.k]).length;
+      return `<button type="button" class="fchip" data-f="${f.k}" aria-pressed="${state.on.has(f.k)}" ${n ? '' : 'disabled'}>${f.label} (${n})</button>`;
+    }).join('') + (tab === 'g' ? `<div class="linkrow"><button type="button" class="link" data-open-outlets>Testate corrispondenti ai giornalisti filtrati (${new Set(g.flatMap(r => r.e.os.map(o => o.id))).size})</button></div>` : '');
+  } else fieldsEl.innerHTML = '';
+  shownG = g;
+
+  // lista
+  const rows = tab === 'g' ? g : t;
+  const LIMIT = 60;
+  $('list').innerHTML = rows.slice(0, LIMIT).map(r => tab === 'g' ? rowPerson(r, state.mode === 'due' ? qa : q, state.mode === 'due' ? qb : q, fullText) : rowOutlet(r, state.mode === 'due' ? qb : q, state.mode === 'due' ? qa : q, fullText)).join('')
+    || '<li class="row muted">Nessun risultato.</li>';
+  $('more').textContent = rows.length > LIMIT ? `Altri ${rows.length - LIMIT} risultati non mostrati.` : '';
+}
+
+function whyTags(r, own) {
+  if (!r.m) return '';
+  const tags = [];
+  const w = W[state.tab];
+  for (const f of [...FIELDS].sort((a, b) => w[b.k] - w[a.k])) {
+    const m = r.m[f.k];
+    if (!m || !state.on.has(f.k)) continue;
+    tags.push(`<span class="tag">${f.label}${m.via ? `: <b>${esc(m.via)}</b>` : ''}</span>`);
+  }
+  if (r.m.via?.via) tags.push(`<span class="tag">Testata di: <b>${esc(r.m.via.via)}</b></span>`);
+  if (r.m.viaT?.via) tags.push(`<span class="tag">Lavora per: <b>${esc(r.m.viaT.via)}</b></span>`);
+  return tags.length ? `<div class="why">${tags.join('')}</div>` : '';
+}
+
+function rowPerson(r, qOwn, qOut, showScore) {
+  const p = r.e;
+  const os = p.os.slice(0, 3).map(o => hl(o.n, qOut)).join(' · ') + (p.os.length > 3 ? ` +${p.os.length - 3}` : '');
+  const note = hasAny(p._x, qOwn) ? snippet(p.note, qOwn) : '';
+  return `<li class="row">
+    ${showScore ? `<span class="score">${Math.round(r.sc)}</span>` : ''}
+    <div class="name">${hl(p.n, qOwn)}</div>
+    <div class="meta">${esc(p.r || 'Ruolo non indicato')}</div>
+    <div class="line">${os}</div>
+    ${p.e ? `<div class="line muted">${hl(p.e, qOwn)}</div>` : ''}
+    ${note ? `<div class="line muted">Note: ${hl(note, qOwn)}</div>` : ''}
+    ${whyTags(r)}
+  </li>`;
+}
+
+function rowOutlet(r, qOwn, qPers, showScore) {
+  const o = r.e;
+  const note = o.note ? snippet(o.note, hasAny(o._x, qOwn) ? qOwn : '') : '';
+  return `<li class="row">
+    ${showScore ? `<span class="score">${Math.round(r.sc)}</span>` : ''}
+    <div class="name">${hl(o.n, qOwn)}</div>
+    <div class="meta">${esc(o.t)} · ${o.ps.length} giornalisti nel campione</div>
+    ${o.e ? `<div class="line muted">${esc(o.e)}</div>` : ''}
+    ${note ? `<div class="line muted">Note: ${hl(note, qOwn)}</div>` : ''}
+    ${whyTags(r)}
+  </li>`;
+}
+
+// ---------- Suggerimenti (proposta) ----------
+let opts = [], active = -1;
+function suggest() {
+  const raw = $('q').value.trim(), q = norm(raw), box = $('suggest');
+  if (state.mode === 'secco' || q.length < 2) { closeSuggest(); return; }
+  const rankBy = (arr) => arr.map(e => ({ e, s: quality(e._n, q) })).filter(x => x.s)
+    .sort((a, b) => Math.round(b.s * 100) - Math.round(a.s * 100) || importance(b.e) - importance(a.e) || a.e.n.length - b.e.n.length);
+  const ts = rankBy(OUT), gs = rankBy(P);
+  opts = [];
+  let html = '';
+  const group = (title, list, type) => {
+    if (!list.length) return;
+    html += `<div class="sg" role="group" aria-label="${title}"><h3>${title} <span class="count">(${list.length})</span></h3>`;
+    list.slice(0, 5).forEach(({ e }) => {
+      const i = opts.push({ type, id: e.id }) - 1;
+      const sub = type === 't' ? `${esc(e.t)} · ${e.ps.length} giornalisti` : esc(e.os.map(o => o.n).slice(0, 2).join(' · '));
+      html += `<button type="button" class="opt" role="option" id="opt${i}" data-i="${i}">${hl(e.n, q)}<span class="sub">${sub}</span></button>`;
+    });
+    html += '</div>';
+  };
+  group('Giornalisti', gs, 'g');
+  group('Testate', ts, 't');
+  const i = opts.push({ type: 'all' }) - 1;
+  html += `<button type="button" class="opt all" role="option" id="opt${i}" data-i="${i}">Cerca «${esc(raw)}» in tutti i campi ↵</button>`;
+  box.innerHTML = html;
+  box.hidden = false;
+  $('q').setAttribute('aria-expanded', 'true');
+  active = -1;
+}
+function closeSuggest() { $('suggest').hidden = true; $('q').setAttribute('aria-expanded', 'false'); active = -1; }
+function setActive(i) {
+  active = i;
+  document.querySelectorAll('.opt').forEach(b => b.classList.toggle('active', +b.dataset.i === i));
+  const el = $('opt' + i);
+  if (el) { el.scrollIntoView({ block: 'nearest' }); $('q').setAttribute('aria-activedescendant', el.id); }
+}
+function choose(i) {
+  const o = opts[i];
+  if (!o || o.type === 'all') return runFullText();
+  state.ent = { type: o.type, id: o.id };
+  state.q = '';
+  state.tab = o.type;
+  $('q').value = '';
+  closeSuggest();
+  renderChip();
+  render();
+}
+function runFullText() {
+  state.q = $('q').value;
+  state.ent = null;
+  state.on = new Set(FIELDS.map(f => f.k));
+  closeSuggest();
+  renderChip();
+  render();
+}
+function renderChip() {
+  const slot = $('chipSlot');
+  if (!state.ent) { slot.innerHTML = ''; return; }
+  const e = state.ent.type === 't' ? O.get(state.ent.id) : P.find(p => p.id === state.ent.id);
+  slot.innerHTML = `<span class="chip">${state.ent.type === 't' ? 'Testata' : 'Giornalista'}: ${esc(e.n)} <button type="button" aria-label="Rimuovi filtro" id="chipX">×</button></span>`;
+  $('chipX').onclick = () => { state.ent = null; renderChip(); render(); $('q').focus(); };
+}
+
+// ---------- Eventi ----------
+$('q').addEventListener('input', suggest);
+
+// In "1 input" i risultati si aggiornano mentre si scrive, da 2 caratteri in su.
+// I chip "Trovato in" restano come sono: si azzerano solo quando la casella si svuota.
+// ---------- Modale: testate dei giornalisti filtrati ----------
+const modal = $('outletsModal');
+function openOutlets() {
+  const counts = new Map();
+  shownG.forEach(r => r.e.os.forEach(o => counts.set(o.id, (counts.get(o.id) || 0) + 1)));
+  const rows = [...counts].map(([id, n]) => ({ o: O.get(id), n }))
+    .sort((a, b) => b.n - a.n || a.o.n.localeCompare(b.o.n));
+  $('omSub').textContent = `${rows.length} testate per cui lavorano i ${shownG.length} giornalisti filtrati.`;
+  $('omList').innerHTML = rows.map(({ o, n }) =>
+    `<li><div class="name">${esc(o.n)}</div><div class="meta">${esc(o.t)} · ${n} ${n === 1 ? 'giornalista filtrato' : 'giornalisti filtrati'}</div></li>`).join('');
+  modal.showModal();
+  $('omList').parentElement.scrollTop = 0;
+}
+$('fields').addEventListener('click', e => { if (e.target.closest('[data-open-outlets]')) openOutlets(); });
+$('omClose').addEventListener('click', () => modal.close());
+modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });   // clic sul fondo scuro
+
+let liveTimer;
+$('q').addEventListener('input', () => {
+  if (state.mode !== 'secco') return;
+  clearTimeout(liveTimer);
+  liveTimer = setTimeout(() => {
+    const v = $('q').value.trim();
+    state.q = v.length >= 2 ? v : '';
+    if (!state.q) state.on = new Set(FIELDS.map(f => f.k));
+    render();
+  }, 150);
+});
+function renderPins() {
+  const box = $('pins');
+  box.hidden = state.mode !== 'secco' || !state.pins.length;
+  box.innerHTML = state.pins.map((p, i) =>
+    `<span class="chip">${esc(p)} <button type="button" data-unpin="${i}" aria-label="Rimuovi ${esc(p)}">×</button></span>`).join('');
+}
+$('pins').addEventListener('click', e => {
+  const b = e.target.closest('[data-unpin]'); if (!b) return;
+  state.pins.splice(+b.dataset.unpin, 1);
+  if (!state.pins.length && !state.q) state.on = new Set(FIELDS.map(f => f.k));
+  renderPins(); render(); $('q').focus();
+});
+// In "1 input" Invio fissa il termine in un chip e svuota la casella
+function pinTerm() {
+  const v = $('q').value.trim();
+  if (!v) return;
+  if (!state.pins.some(p => norm(p) === norm(v))) state.pins.push(v);
+  $('q').value = '';
+  state.q = '';
+  clearTimeout(liveTimer);
+  renderPins(); render();
+}
+
+$('q').addEventListener('keydown', e => {
+  if (state.mode === 'secco') {
+    if (e.key === 'Enter') { e.preventDefault(); pinTerm(); }
+    // Backspace a casella vuota toglie l'ultimo chip
+    else if (e.key === 'Backspace' && !$('q').value && state.pins.length) { state.pins.pop(); renderPins(); render(); }
+    return;
+  }
+  const open = !$('suggest').hidden;
+  if (e.key === 'ArrowDown' && open) { e.preventDefault(); setActive(Math.min(active + 1, opts.length - 1)); }
+  else if (e.key === 'ArrowUp' && open) { e.preventDefault(); setActive(Math.max(active - 1, 0)); }
+  else if (e.key === 'Enter') { e.preventDefault(); active >= 0 ? choose(active) : runFullText(); }
+  else if (e.key === 'Escape') closeSuggest();
+});
+$('suggest').addEventListener('mousedown', e => e.preventDefault());
+$('suggest').addEventListener('click', e => { const b = e.target.closest('.opt'); if (b) choose(+b.dataset.i); });
+$('q').addEventListener('blur', closeSuggest);
+
+
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); });
+$('fields').addEventListener('click', e => {
+  const b = e.target.closest('.fchip'); if (!b || b.disabled) return;
+  const k = b.dataset.f;
+  state.on.has(k) ? state.on.delete(k) : state.on.add(k);
+  if (!state.on.size) state.on.add(k);
+  render();
+});
+
+function renderWeights() {
+  const g = state.tab === 'g' ? ' on' : '', t = state.tab === 't' ? ' on' : '';
+  $('wtable').innerHTML = `<tr><th>Campo</th><th class="num${g}">Giornalisti</th><th class="num${t}">Testate</th></tr>`
+    + [...FIELDS].sort((a, b) => W[state.tab][b.k] - W[state.tab][a.k])
+      .map(f => `<tr><td>${f.label}</td><td class="num${g}">${W.g[f.k]}</td><td class="num${t}">${W.t[f.k]}</td></tr>`).join('');
+}
+
+function setMode(m) {
+  state.mode = m;
+  document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
+  $('criteria').hidden = m !== 'secco';
+  // Senza tendina non esiste il filtro esatto da suggerimento
+  if (m === 'secco' && state.ent) { state.ent = null; renderChip(); }
+  renderPins();
+  closeSuggest();
+  render();
+}
+
+
+
+setMode('secco');
+</script>
+</body>
+</html>

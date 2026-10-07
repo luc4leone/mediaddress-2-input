@@ -1,0 +1,82 @@
+CRITICITÀ DELLA SOLUZIONE A 2 INPUT
+
+Contesto
+La banca dati ha due tab sopra i risultati, "Giornalisti" e "Testate", e due caselle di
+testo libero:
+- una cerca in nome del giornalista, email e note giornalista;
+- una cerca in nome della testata e note testata.
+Le due caselle esistono perché chi cerca "libero" avendo in mente la testata si aspetta di
+vedere in cima, nel tab Testate, le testate con "libero" nel titolo.
+
+
+1. Lo user deve scegliere il campo prima di cercare
+Chi scrive "libero" spesso non sa se troverà una testata o una persona (o un "Libero
+Rossi"). Deve tradurre il suo intento nel modello dati. È lo stesso problema dei due modelli
+mentali (filtri sul giornalista o filtri sulla testata), spostato nella ricerca.
+
+2. Se compila entrambe le caselle, il significato non è chiaro
+Le due caselle sono in AND o in OR? Molti user scrivono la stessa parola in tutte e due per
+sicurezza e ottengono un AND che restringe troppo.
+
+3. Il collegamento con i tab è implicito
+La casella "giornalista" filtra anche il tab Testate, che mostra le testate dei giornalisti
+trovati, e viceversa. È corretto, ma non è quello che lo user si aspetta guardando due campi
+separati. Esempio: "libero" nella casella giornalista, tab Testate, mostra ANSA e Corriere
+(testate di chi ha "libero" nell'email o nelle note), non la testata LIBERO.
+
+4. Campi precisi e campi rumorosi nello stesso input
+"Nome" è preciso, "note" è rumoroso. Con una parola comune come "libero" ("libero
+professionista") le note riempiono il risultato. Il rimedio è il ranking, non la separazione
+in due input.
+
+5. L'email è nel gruppo sbagliato, o in tutti e due
+Chi scrive "@corriere.it" sta cercando una testata, ma l'email appartiene al giornalista.
+Questo mostra che dividere per entità è una scelta arbitraria.
+
+
+ALTERNATIVE CONSIDERATE
+
+5 input, uno per campo
+Molto precisi, ma richiedono allo user di sapere esattamente in quale campo cercare.
+Mostrare solo i match sul nome significa inoltre perdere risultati senza accorgersene: la
+lista vuota o corta non dice che c'erano match nelle note. Vanno bene come ricerca avanzata,
+non come interfaccia di default.
+
+1 input su 5 campi, con rilevanza che cambia col tab
+Da decidere: il testo libero filtra o ordina? Se filtra sull'unione dei 5 campi e il tab
+cambia solo l'ordine, i due tab sono coerenti. I numeri sui tab però si gonfiano (nel tab
+Testate compaiono anche le testate dove lavora "Libero Rossi"); va bene se finiscono in
+fondo e si capisce perché ci sono.
+
+Ranking per tab
+- Tab Giornalisti: nome > email > nome della sua testata > note giornalista > note testata.
+- Tab Testate: nome testata > dominio email dei suoi giornalisti > nome di un suo giornalista
+  > note.
+- Tipo di corrispondenza: esatta > inizio parola > parola intera > sottostringa.
+
+Mostrare la ragione del match
+Su ogni riga un'etichetta tipo "trovato in: note" ed evidenziazione del testo trovato. Senza
+questo il ranking è una scatola nera e i risultati in fondo sembrano errori.
+
+
+RACCOMANDAZIONE
+Un solo input con suggerimenti raggruppati per tipo mentre si scrive:
+
+  libero
+    Testate       Libero Quotidiano · Libero.it
+    Giornalisti   Libero Rossi · Libero Bianchi
+    ↵ Cerca "libero" in tutti i campi
+
+- Se lo user sceglie un suggerimento, diventa un filtro esatto su quell'entità (un chip
+  "Testata: Libero Quotidiano") e si apre da solo il tab giusto. Lo user ha chiarito il suo
+  intento senza che glielo si sia chiesto prima.
+- Se preme Invio, ricerca full-text con ranking per tab. Sopra i risultati, chip con i
+  conteggi per campo: Nome testata (2) · Nome giornalista (4) · Email (7) · Note (38).
+  Deselezionando "Note" si toglie il rumore. Recupera la precisione dei 5 input solo quando
+  serve.
+
+I suggerimenti risolvono il caso "ho in mente la testata Libero" meglio dei 2 input; i chip
+per campo danno la precisione dei 5 input senza i 5 campi.
+
+Il prototipo (ricerca-proto.html) mette a confronto le soluzioni; le iterazioni sono in
+iterazioni.html.

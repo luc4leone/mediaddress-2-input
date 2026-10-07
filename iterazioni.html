@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iterazioni ricerca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* 1. Scale */
+  --font-size-12: 12px; --font-size-14: 14px; --font-size-16: 16px; --font-size-24: 24px; --font-size-36: 36px;
+  --line-height-tight: 1.1; --line-height-snug: 1.3; --line-height-normal: 1.5;
+  --space-6: 6px; --space-12: 12px; --space-18: 18px; --space-24: 24px; --space-36: 36px; --space-48: 48px; --space-72: 72px;
+  --radius-4: 4px; --radius-8: 8px;
+  --border-width-1: 1px;
+  --container-max-width: 1080px;
+
+  /* 2. Palette */
+  --color-coral: #FF6B4A;
+  --color-black: #0E0E10;
+  --color-white: #FAFAFA;
+  --color-grey-dark: #6B6B73;
+  --color-line: #E3E3E6;
+
+  /* 3. Semantiche */
+  --color-background: var(--color-white);
+  --color-text: var(--color-black);
+  --color-text-muted: var(--color-grey-dark);
+  --color-border: var(--color-line);
+  --color-accent: var(--color-coral);
+  --color-on-accent: var(--color-black);
+  --focus-ring-color: var(--color-black);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --font-display: 'Archivo Black', sans-serif;
+  --font-body: 'Archivo', sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-16);
+  line-height: var(--line-height-normal);
+  overflow-x: hidden;
+}
+:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
+
+.wrap { max-width: var(--container-max-width); margin: 0 auto; padding: var(--space-36) var(--space-18) var(--space-72); }
+@media (min-width: 768px) { .wrap { padding: var(--space-48) var(--space-36) var(--space-72); } }
+
+h1 { font-family: var(--font-display); font-weight: 400; font-size: var(--font-size-36); line-height: var(--line-height-tight); margin: 0 0 var(--space-12); }
+.lead { color: var(--color-text-muted); margin: 0 0 var(--space-36); max-width: 60ch; }
+.lead a { color: inherit; }
+
+.iter { border-top: var(--border-width-1) solid var(--color-border); padding-top: var(--space-24); margin-top: var(--space-48); }
+.iter header { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-6) var(--space-12); }
+.iter h2 { font-size: var(--font-size-24); font-weight: 700; line-height: var(--line-height-snug); margin: 0; }
+.date { color: var(--color-text-muted); font-size: var(--font-size-14); }
+.latest { font-size: var(--font-size-12); font-weight: 600; background: var(--color-accent); color: var(--color-on-accent); padding: 0 var(--space-6); border-radius: var(--radius-4); }
+.iter > p { margin: var(--space-12) 0 0; max-width: 70ch; }
+.iter ul { margin: var(--space-12) 0 0; padding-left: var(--space-18); max-width: 70ch; }
+
+.grid { display: grid; grid-template-columns: 1fr; gap: var(--space-24); margin-top: var(--space-24); }
+@media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } }
+figure { margin: 0; }
+figure a { display: block; border: var(--border-width-1) solid var(--color-border); border-radius: var(--radius-8); overflow: hidden; }
+figure img { display: block; width: 100%; height: auto; }
+figcaption { font-size: var(--font-size-14); margin-top: var(--space-6); }
+figcaption b { font-weight: 600; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Iterazioni</h1>
+  <p class="lead">Screenshot del <a href="ricerca-proto.html">prototipo di ricerca per testo libero</a>, dalla più recente alla prima. Clicca un'immagine per vederla a grandezza piena.</p>
+
+  <!-- Nuove iterazioni qui sopra, la più recente per prima. Sposta il badge "ultima". -->
+
+  <section class="iter" id="it18">
+    <header>
+      <h2>18 · v2: numeri tra parentesi nei chip "Trovato in"</h2>
+      <span class="date">7 ottobre 2026</span>
+      <span class="latest">ultima</span>
+    </header>
+    <ul>
+      <li>In <a href="ricerca-proto-v2.html">v2</a> i numeri dei chip "Trovato in" sono tra parentesi: Nome testata (63), Email giornalista (2).</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it18-1-v2-trovato-in-parentesi.jpg"><img src="screenshots/it18-1-v2-trovato-in-parentesi.jpg" alt="v2 con i chip Trovato in e i numeri tra parentesi" loading="lazy"></a>
+        <figcaption><b>v2, "repubblica" fissato.</b> I chip riportano il numero tra parentesi.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it17">
+    <header>
+      <h2>17 · v2: input senza placeholder</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>In <a href="ricerca-proto-v2.html">v2</a> la casella "Filtra per termine" non ha più il testo segnaposto "Nome, email, testata, note…".</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it17-1-v2-input-senza-placeholder.jpg"><img src="screenshots/it17-1-v2-input-senza-placeholder.jpg" alt="v2 con la casella Filtra per termine vuota e senza segnaposto" loading="lazy"></a>
+        <figcaption><b>v2, stato iniziale.</b> La casella è vuota.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it16">
+    <header>
+      <h2>16 · v2: senza spiegazione, con il numero di testate</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>In <a href="ricerca-proto-v2.html">v2</a> tolto il testo che appariva sopra i tab quando si filtra ("Stessi risultati nei due tab, ordine diverso…"). I tab ora sono il primo elemento della colonna e partono alla stessa altezza delle altre due.</li>
+      <li>Il link diventa "Testate corrispondenti ai giornalisti filtrati (15)": il numero è quello delle testate nella modale e segue i chip "Trovato in".</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it16-1-v2-senza-spiegazione.jpg"><img src="screenshots/it16-1-v2-senza-spiegazione.jpg" alt="v2 senza testo sopra i tab e con il numero di testate nel link" loading="lazy"></a>
+        <figcaption><b>v2, "repubblica" fissato.</b> Niente testo sopra i tab; il link riporta (15).</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it15">
+    <header>
+      <h2>15 · v2: link alle testate corrispondenti</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>In <a href="ricerca-proto-v2.html">v2</a>, nel tab Giornalisti, sotto i chip "Trovato in" c'è il link "Testate corrispondenti ai giornalisti filtrati". Compare solo quando c'è un filtro attivo.</li>
+      <li>Il link ha lo stile dei link del sito: colore del testo, sottolineatura grigia, accento corallo solo all'hover.</li>
+      <li>Al clic si apre una modale con le testate per cui lavorano i giornalisti filtrati (15 con "repubblica", contro le 17 del tab Testate), ordinate per numero di giornalisti filtrati che ci lavorano.</li>
+      <li>La modale si chiude con la ×, con Esc o cliccando sul fondo scuro. Il fondo usa il colore overlay del brand; la modale è piatta, senza ombre.</li>
+      <li>Il link segue i chip "Trovato in": se escludi un campo, cambia l'elenco dei giornalisti filtrati e quindi quello delle testate.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it15-1-v2-link-testate.jpg"><img src="screenshots/it15-1-v2-link-testate.jpg" alt="v2, tab Giornalisti con il link Testate corrispondenti ai giornalisti filtrati sotto i chip" loading="lazy"></a>
+        <figcaption><b>Il link</b> sotto i chip "Trovato in", sopra la lista dei giornalisti.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it15-2-v2-modale-testate.jpg"><img src="screenshots/it15-2-v2-modale-testate.jpg" alt="Modale con le 15 testate corrispondenti ai 63 giornalisti filtrati" loading="lazy"></a>
+        <figcaption><b>La modale.</b> "15 testate per cui lavorano i 63 giornalisti filtrati", con il numero di giornalisti filtrati per ciascuna.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it14">
+    <header>
+      <h2>14 · v2: senza testo di aiuto sotto la casella</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>In <a href="ricerca-proto-v2.html">v2</a> tolto il testo "I risultati si aggiornano mentre scrivi. Premi Invio per fissare il termine e aggiungerne un altro." sotto la casella.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it14-1-v2-senza-hint.jpg"><img src="screenshots/it14-1-v2-senza-hint.jpg" alt="v2 con la casella e il chip senza testo di aiuto" loading="lazy"></a>
+        <figcaption><b>v2, "repubblica" fissato.</b> Sotto la casella c'è direttamente il chip.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it13">
+    <header>
+      <h2>13 · v2: le tre colonne partono alla stessa altezza</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>In <a href="ricerca-proto-v2.html">v2</a> tolti i margini sopra i primi elementi delle prime due colonne: l'etichetta "Filtra per termine" e la spiegazione sopra i tab (o i tab stessi, quando la spiegazione non c'è).</li>
+      <li>Lo spazio tra la spiegazione e i tab ora sta sotto la spiegazione.</li>
+      <li>Misurato nel browser: etichetta, spiegazione e titolo "Criterio di ordinamento" partono tutti a 24px dal bordo alto.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it13-1-v2-colonne-allineate.jpg"><img src="screenshots/it13-1-v2-colonne-allineate.jpg" alt="v2 con il contenuto delle tre colonne allineato in alto" loading="lazy"></a>
+        <figcaption><b>v2, "repubblica" fissato.</b> Il primo elemento delle tre colonne è alla stessa altezza.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it12">
+    <header>
+      <h2>12 · v2: sidebar senza titolo</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>In <a href="ricerca-proto-v2.html">v2</a> sono stati tolti dalla sidebar il titolo "Banca Dati" e il sottotitolo "Prototipo della ricerca per testo libero."</li>
+      <li>"Come ordiniamo i risultati" diventa "Criterio di ordinamento".</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it12-1-v2-sidebar-senza-titolo.jpg"><img src="screenshots/it12-1-v2-sidebar-senza-titolo.jpg" alt="v2 con la sidebar che inizia da Filtra per termine e la colonna Criterio di ordinamento" loading="lazy"></a>
+        <figcaption><b>v2, "repubblica" fissato.</b> La sidebar inizia con "Filtra per termine"; a destra "Criterio di ordinamento".</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it11">
+    <header>
+      <h2>11 · Prototipo v2: solo "1 input"</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <p>Nuova pagina <a href="ricerca-proto-v2.html">ricerca-proto-v2.html</a>, copia di <a href="ricerca-proto.html">ricerca-proto.html</a> con una sola modalità.</p>
+    <ul>
+      <li>In sidebar resta solo la casella del caso d'uso "1 input": niente tab "2 input" e "1 input + tendina", niente tendina dei suggerimenti.</li>
+      <li>L'etichetta "Cerca" diventa "Filtra per termine".</li>
+      <li>La colonna "Come ordiniamo i risultati" è sempre visibile.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it11-1-v2-filtra-per-termine.jpg"><img src="screenshots/it11-1-v2-filtra-per-termine.jpg" alt="Prototipo v2 con la casella Filtra per termine e il chip repubblica" loading="lazy"></a>
+        <figcaption><b>v2, "repubblica" fissato con Invio.</b> Sidebar con la sola casella "Filtra per termine" e il chip.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it10">
+    <header>
+      <h2>10 · Colonna del criterio, testo a 14px</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>Nella colonna "Come ordiniamo i risultati" il testo, la tabella e l'esempio passano a 14px, il titolo a 18px.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it10-1-criterio-14px.jpg"><img src="screenshots/it10-1-criterio-14px.jpg" alt="1 input con la colonna del criterio a 14px" loading="lazy"></a>
+        <figcaption><b>1 input, "repubblica".</b> Colonna del criterio con testo a 14px.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it09">
+    <header>
+      <h2>09 · Colonna del criterio, font più grande</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>Nella colonna "Come ordiniamo i risultati" il font è aumentato di 1px: titolo 17px, testo e tabella 13px.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it09-1-criterio-font-piu-grande.jpg"><img src="screenshots/it09-1-criterio-font-piu-grande.jpg" alt="1 input con la colonna del criterio a font più grande" loading="lazy"></a>
+        <figcaption><b>1 input, "repubblica".</b> La colonna a destra con il font più grande.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it08">
+    <header>
+      <h2>08 · "1 input": Invio fissa il termine in un chip</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>In "1 input" Invio sposta il termine in un chip nero sotto la casella e svuota la casella. La × sul chip toglie il filtro.</li>
+      <li>Si possono fissare più termini: un risultato deve contenerli tutti (AND), anche in campi diversi. Il punteggio è la somma dei punteggi dei singoli termini.</li>
+      <li>Mentre scrivi un nuovo termine, i risultati si filtrano già insieme ai chip fissati.</li>
+      <li>Backspace a casella vuota toglie l'ultimo chip.</li>
+      <li>Nella colonna del criterio c'è un nuovo punto, "Più termini".</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it08-1-chip-e-live.jpg"><img src="screenshots/it08-1-chip-e-live.jpg" alt="Chip repubblica fissato e milano in digitazione" loading="lazy"></a>
+        <figcaption><b>"repubblica" fissato, "milano" mentre lo scrivi.</b> 8 giornalisti contengono entrambi i termini.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it08-2-due-chip.jpg"><img src="screenshots/it08-2-due-chip.jpg" alt="Due chip, repubblica e milano, tab Testate" loading="lazy"></a>
+        <figcaption><b>Due chip, tab Testate.</b> LA REPUBBLICA Milano è prima. LA REPUBBLICA entra perché "milano" compare nelle note di una sua giornalista.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it07">
+    <header>
+      <h2>07 · "1 input" filtra mentre scrivi</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>In "1 input" i risultati si aggiornano a ogni tasto, da 2 caratteri in su, dopo una pausa di 150 ms. Non serve più premere Invio.</li>
+      <li>I chip "Trovato in" restano come li hai impostati mentre scrivi e si azzerano solo quando svuoti la casella.</li>
+      <li>Il testo sotto la casella ora dice "I risultati si aggiornano mentre scrivi, in tutti i campi."</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it07-1-1input-live.jpg"><img src="screenshots/it07-1-1input-live.jpg" alt="1 input con repubblica digitato, risultati aggiornati senza Invio" loading="lazy"></a>
+        <figcaption><b>"repubblica" digitato tasto per tasto, senza Invio.</b> Già con "repu" i risultati erano filtrati.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it06">
+    <header>
+      <h2>06 · Terza modalità e colonna del criterio</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>Tre modalità: "2 input", "1 input" (senza tendina, si cerca con Invio) e "1 input + tendina" (la vecchia "1 input").</li>
+      <li>Solo in "1 input" compare una terza colonna a destra, larga quanto la sidebar, che spiega come vengono ordinati i risultati. La tabella dei pesi è generata dai pesi veri del prototipo e mette in grassetto il tab attivo.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it06-1-1input-testate.jpg"><img src="screenshots/it06-1-1input-testate.jpg" alt="1 input, repubblica, tab Testate, con colonna del criterio a destra" loading="lazy"></a>
+        <figcaption><b>1 input, "repubblica", tab Testate.</b> Nella tabella è in grassetto la colonna Testate.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it06-2-1input-giornalisti.jpg"><img src="screenshots/it06-2-1input-giornalisti.jpg" alt="1 input, repubblica, tab Giornalisti, con colonna del criterio a destra" loading="lazy"></a>
+        <figcaption><b>1 input, tab Giornalisti.</b> La tabella si riordina e mette in grassetto la colonna Giornalisti.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it06-3-1input-tendina.jpg"><img src="screenshots/it06-3-1input-tendina.jpg" alt="1 input + tendina, senza colonna del criterio" loading="lazy"></a>
+        <figcaption><b>1 input + tendina.</b> La colonna del criterio non c'è; i risultati tornano larghi.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it05">
+    <header>
+      <h2>05 · Ranking: copertura, articoli, importanza</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <p>Con "repubblica", "LA REPUBBLICA" era quinto: tutte le testate avevano lo stesso punteggio e a parità vinceva l'ordine alfabetico. Ora, in entrambe le modalità:</p>
+    <ul>
+      <li><b>Copertura</b>: conta quanta parte del nome copre la parola cercata. Un nome "pulito" batte uno lungo.</li>
+      <li><b>Articoli e preposizioni ignorati</b> (la, il, di, d…): "LA REPUBBLICA" conta come corrispondenza esatta di "repubblica".</li>
+      <li><b>Spareggio per importanza</b>: a parità di punteggio vince la testata con più giornalisti. Nel campione è un'approssimazione, perché per ogni testata ne ho scaricati al massimo 6.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it05-1-2input-repubblica.jpg"><img src="screenshots/it05-1-2input-repubblica.jpg" alt="2 input, repubblica in Cerca testata, LA REPUBBLICA primo" loading="lazy"></a>
+        <figcaption><b>2 input, "repubblica" in Cerca testata.</b> LA REPUBBLICA è primo. DOOR (LA REPUBBLICA) supera le edizioni locali perché, tolti gli articoli, il suo nome è più corto.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it05-2-1input-repubblica.jpg"><img src="screenshots/it05-2-1input-repubblica.jpg" alt="1 input, repubblica, tab Testate, LA REPUBBLICA primo" loading="lazy"></a>
+        <figcaption><b>1 input, "repubblica", tab Testate.</b> LA REPUBBLICA è primo con punteggio 202.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it04">
+    <header>
+      <h2>04 · Suggerimenti: prima i giornalisti</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>Nella tendina dei suggerimenti i giornalisti vengono prima delle testate.</li>
+      <li>Ogni gruppo ha un'intestazione in grassetto su fondo grigio, e una linea lo separa dal gruppo successivo.</li>
+      <li>Il numero di suggerimenti è tra parentesi: Giornalisti (2), Testate (5).</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it04-1-suggerimenti-libero.jpg"><img src="screenshots/it04-1-suggerimenti-libero.jpg" alt="Tendina con gruppo Giornalisti (2) sopra Testate (5)" loading="lazy"></a>
+        <figcaption><b>"libero".</b> Giornalisti sopra, Testate sotto, con un'intestazione grigia per ogni gruppo.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it04-2-suggerimenti-corriere.jpg"><img src="screenshots/it04-2-suggerimenti-corriere.jpg" alt="Tendina con solo il gruppo Testate (30)" loading="lazy"></a>
+        <figcaption><b>"corriere".</b> Nessun giornalista corrisponde, quindi c'è solo il gruppo Testate. Il numero (30) è il totale delle corrispondenze, ma la tendina ne mostra 5.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it03">
+    <header>
+      <h2>03 · Interruttore come tab</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>Le voci dell'interruttore ora si chiamano "2 input" e "1 input".</li>
+      <li>L'interruttore ha lo stesso stile dei tab Giornalisti e Testate: testo, con una sottolineatura corallo sulla voce attiva.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it03-1-tab-1input.jpg"><img src="screenshots/it03-1-tab-1input.jpg" alt="Sidebar con interruttore a tab, 1 input attivo" loading="lazy"></a>
+        <figcaption><b>1 input attivo.</b> Interruttore e tab dei risultati hanno lo stesso stile.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it03-2-tab-2input.jpg"><img src="screenshots/it03-2-tab-2input.jpg" alt="Sidebar con interruttore a tab, 2 input attivo" loading="lazy"></a>
+        <figcaption><b>2 input attivo.</b></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it02">
+    <header>
+      <h2>02 · Sidebar più pulita</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <ul>
+      <li>Tolta la sezione "Prova con" dalla sidebar.</li>
+      <li>Sottotitolo accorciato in "Prototipo della ricerca per testo libero."</li>
+      <li>Tolto "Le due caselle sono in AND." dalla spiegazione della versione attuale.</li>
+      <li>I numeri accanto ai tab sono tra parentesi: Giornalisti (39), Testate (19).</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it02-1-proposta-testate.jpg"><img src="screenshots/it02-1-proposta-testate.jpg" alt="Proposta, tab Testate con conteggi tra parentesi e sidebar senza Prova con" loading="lazy"></a>
+        <figcaption><b>Proposta, tab Testate.</b> Sidebar senza "Prova con", conteggi dei tab tra parentesi.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it02-2-attuale-testate.jpg"><img src="screenshots/it02-2-attuale-testate.jpg" alt="Attuale, tab Testate con spiegazione senza la frase sull'AND" loading="lazy"></a>
+        <figcaption><b>Attuale, tab Testate.</b> La spiegazione in alto non cita più l'AND.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="iter" id="it01">
+    <header>
+      <h2>01 · Due versioni a confronto</h2>
+      <span class="date">7 ottobre 2026</span>
+    </header>
+    <p>Primo prototipo su un campione di staging (373 testate, 647 giornalisti). Un interruttore passa dalla versione attuale a quella proposta.</p>
+    <ul>
+      <li><b>Attuale</b>: due caselle in AND, una sui campi del giornalista e una su quelli della testata.</li>
+      <li><b>Proposta</b>: una casella con suggerimenti divisi in Testate e Giornalisti. Con Invio cerca in tutti e 5 i campi e ordina per rilevanza, con pesi diversi nei due tab. I chip "Trovato in" escludono un campo.</li>
+    </ul>
+    <div class="grid">
+      <figure>
+        <a href="screenshots/it01-1-suggerimenti.jpg"><img src="screenshots/it01-1-suggerimenti.jpg" alt="Casella di ricerca con 'libero' e suggerimenti divisi in Testate e Giornalisti" loading="lazy"></a>
+        <figcaption><b>Proposta, suggerimenti.</b> Scrivendo "libero" compaiono testate e giornalisti separati, più la voce per cercare in tutti i campi.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it01-2-tuttiicampi-testate.jpg"><img src="screenshots/it01-2-tuttiicampi-testate.jpg" alt="Tab Testate con LIBERO in cima e chip Trovato in" loading="lazy"></a>
+        <figcaption><b>Proposta, tutti i campi, tab Testate.</b> LIBERO è in cima: il nome della testata pesa di più.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it01-3-tuttiicampi-giornalisti.jpg"><img src="screenshots/it01-3-tuttiicampi-giornalisti.jpg" alt="Tab Giornalisti con Libero Dolce in cima" loading="lazy"></a>
+        <figcaption><b>Proposta, tutti i campi, tab Giornalisti.</b> Stessi risultati, ordine diverso: prima i nomi, poi le email @libero.it. Chi lavora a LIBERO scende: i pesi sono da tarare.</figcaption>
+      </figure>
+      <figure>
+        <a href="screenshots/it01-4-attuale-testate.jpg"><img src="screenshots/it01-4-attuale-testate.jpg" alt="Versione attuale, tab Testate con ANSA e Corriere in cima" loading="lazy"></a>
+        <figcaption><b>Attuale, "libero" in Cerca giornalista, tab Testate.</b> Compaiono ANSA e Corriere, le testate dei giornalisti trovati, non la testata LIBERO.</figcaption>
+      </figure>
+    </div>
+  </section>
+</main>
+</body>
+</html>
