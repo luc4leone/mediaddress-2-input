@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototipi ricerca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* 1. Scale */
+  --font-size-14: 14px; --font-size-16: 16px; --font-size-36: 36px;
+  --line-height-tight: 1.1; --line-height-normal: 1.5;
+  --space-6: 6px; --space-12: 12px; --space-18: 18px; --space-36: 36px; --space-48: 48px; --space-72: 72px;
+  --border-width-1: 1px;
+  --container-max-width: 720px;
+
+  /* 2. Palette */
+  --color-coral: #FF6B4A;
+  --color-black: #0E0E10;
+  --color-white: #FAFAFA;
+  --color-grey: #8C8C94;
+  --color-grey-dark: #6B6B73;
+  --color-line: #E3E3E6;
+
+  /* 3. Semantiche */
+  --color-background: var(--color-white);
+  --color-text: var(--color-black);
+  --color-text-muted: var(--color-grey-dark);
+  --color-border: var(--color-line);
+  --color-accent: var(--color-coral);
+  --focus-ring-color: var(--color-black);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --font-display: 'Archivo Black', sans-serif;
+  --font-body: 'Archivo', sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-16);
+  line-height: var(--line-height-normal);
+  overflow-x: hidden;
+}
+:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
+
+.wrap { max-width: var(--container-max-width); margin: 0 auto; padding: var(--space-36) var(--space-18) var(--space-72); }
+@media (min-width: 768px) { .wrap { padding: var(--space-72) var(--space-36); } }
+
+h1 { font-family: var(--font-display); font-weight: 400; font-size: var(--font-size-36); line-height: var(--line-height-tight); margin: 0 0 var(--space-36); }
+
+/* Link: nel colore del testo, sottolineati in grigio; l'accento compare solo all'hover (come base.css del sito) */
+a { color: inherit; text-decoration-color: var(--color-grey); text-underline-offset: 0.15em; }
+a:hover { text-decoration-color: var(--color-accent); }
+
+ul { list-style: none; margin: 0; padding: 0; }
+li { padding: var(--space-18) 0; border-top: var(--border-width-1) solid var(--color-border); }
+li:last-child { border-bottom: var(--border-width-1) solid var(--color-border); }
+li a { font-weight: 600; }
+li p { margin: var(--space-6) 0 0; color: var(--color-text-muted); font-size: var(--font-size-14); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Prototipi ricerca</h1>
+  <ul>
+    <li>
+      <a href="ricerca-proto.html">ricerca-proto.html</a>
+      <p>Tre modalità a confronto: 2 input, 1 input e 1 input + tendina.</p>
+    </li>
+    <li>
+      <a href="ricerca-proto-v2.html">ricerca-proto-v2.html</a>
+      <p>Solo 1 input, con chip per termine e modale delle testate corrispondenti.</p>
+    </li>
+  </ul>
+</main>
+</body>
+</html>
