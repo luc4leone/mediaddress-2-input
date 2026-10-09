@@ -50,5 +50,5 @@ Le uscite di `javascript_tool` vengono troncate a circa 1000 caratteri, e la pag
 
 ## Vincoli
 
-- I dati contengono nomi ed email reali di giornalisti: tienili in locale e non pubblicare il prototipo come Artifact.
+- In `ricerca-proto-data.json` i nomi di battesimo dei giornalisti, la parte prima della @ delle loro email (e delle email personali delle testate) e i numeri di telefono nelle note sono inventati; cognomi e testate sono reali. Se rigeneri i dati da staging, anonimizzali di nuovo prima di fare commit. Gli screenshot in `screenshots/` mostrano ancora i dati reali. Non pubblicare il prototipo come Artifact.
 - Lo stile segue il brand definito nel CLAUDE.md globale. I token sono copiati nel `:root` del template su tre livelli: scale, palette, semantiche.
